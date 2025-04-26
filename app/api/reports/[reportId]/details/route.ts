@@ -9,7 +9,7 @@ export async function GET(
   context: { params: { reportId: string } }
 ) {
   try {
-    const { reportId } = await context.params;
+    const { reportId } = context.params;
 
     const report = await prisma.report.findUnique({
       where: {
