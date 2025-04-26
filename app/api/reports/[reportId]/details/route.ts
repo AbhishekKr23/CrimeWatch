@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Make sure to import authOptions
 
 const prisma = new PrismaClient();
 
 export async function GET(
   request: Request,
-  context: { params: { reportId: string } }
+  { params }: { params: { reportId: string } }
 ) {
   try {
-    const { reportId } = context.params;
+    const { reportId } = params;
 
     const report = await prisma.report.findUnique({
       where: {
@@ -33,16 +34,15 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  context: { params: { reportId: string } }
+  { params }: { params: { reportId: string } }
 ) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions); // You need to pass authOptions
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { reportId } = context.params;
-
+    const { reportId } = params;
     const { status } = await request.json();
 
     const report = await prisma.report.update({
@@ -59,4 +59,3 @@ export async function PATCH(
     );
   }
 }
-
