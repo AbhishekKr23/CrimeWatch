@@ -5,13 +5,14 @@ import { getServerSession } from "next-auth";
 const prisma = new PrismaClient();
 
 export async function GET(
-  request: NextRequest,
-  context: { params: { reportId: string } }
+  request: Request,
+  context: any
 ) {
+  const { params } = await context; // await lagana hai
   try {
     const report = await prisma.report.findUnique({
       where: {
-        id: context.params.reportId,
+        reportId: params.reportId,
       },
     });
 
@@ -29,10 +30,12 @@ export async function GET(
   }
 }
 
+
 export async function PATCH(
-  request: NextRequest,
-  context: { params: { reportId: string } }
+  request: Request,
+  context: any
 ) {
+  const { params } = await context; // await lagana hai
   try {
     const session = await getServerSession();
     if (!session) {
@@ -41,13 +44,12 @@ export async function PATCH(
 
     const { status } = await request.json();
     const report = await prisma.report.update({
-      where: { id: context.params.reportId },
+      where: { id: params.id },
       data: { status },
     });
 
     return NextResponse.json(report);
   } catch (error) {
-    console.error("Error updating report:", error);
     return NextResponse.json(
       { error: "Error updating report" },
       { status: 500 }
