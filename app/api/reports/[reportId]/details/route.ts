@@ -4,17 +4,16 @@ import { getServerSession } from "next-auth";
 
 const prisma = new PrismaClient();
 
+// Correct type definition for GET
 export async function GET(
   request: Request,
-  { params }: { params: { reportId: string } } // Correct parameter typing
+  { params }: { params: { reportId: string } }
 ) {
   try {
-    const { reportId } = params; // No need for await here
+    const { reportId } = params;
 
     const report = await prisma.report.findUnique({
-      where: {
-        reportId: reportId,
-      },
+      where: { reportId },
     });
 
     if (!report) {
@@ -31,9 +30,10 @@ export async function GET(
   }
 }
 
+// Correct type definition for PATCH
 export async function PATCH(
   request: Request,
-  { params }: { params: { reportId: string } } // Correct parameter typing
+  { params }: { params: { reportId: string } }
 ) {
   try {
     const session = await getServerSession();
@@ -41,11 +41,11 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { reportId } = params; // No need for await here
+    const { reportId } = params;
     const { status } = await request.json();
 
     const report = await prisma.report.update({
-      where: { reportId: reportId },
+      where: { reportId },
       data: { status },
     });
 
