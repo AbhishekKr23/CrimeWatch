@@ -1,32 +1,31 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
-interface Context {
-  params: { reportId: string };
-}
-
 export async function GET(
   request: Request,
-  context: Context
+  context: { params: { reportId: string } }
 ) {
   try {
-    const { reportId } = context.params;
+    const { reportId } = await context.params; // <-- yaha await lagaya
 
     const report = await prisma.report.findUnique({
-      where: { reportId },
+      where: {
+        reportId: reportId,  // Tumhara DB column 'reportId' hi hai
+      },
     });
 
-    return report 
-      ? NextResponse.json(report)
-      : NextResponse.json({ error: "Report not found" }, { status: 404 });
+    if (!report) {
+      return NextResponse.json({ error: "Report not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(report);
   } catch (error) {
-    console.error("Error fetching report:", error);
+    console.error("Error fetching report details:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to fetch report details" },
       { status: 500 }
     );
   }
@@ -34,26 +33,30 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  context: Context
+  context: { params: { reportId: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { reportId } = await context.params; // <-- yaha bhi await lagaya
     const { status } = await request.json();
-    const updatedReport = await prisma.report.update({
-      where: { reportId: context.params.reportId },
+
+    const report = await prisma.report.update({
+      where: { reportId: reportId },
       data: { status },
     });
 
-    return NextResponse.json(updatedReport);
+    return NextResponse.json(report);
   } catch (error) {
     console.error("Error updating report:", error);
     return NextResponse.json(
-      { error: "Failed to update report" },
+      { error: "Error updating report" },
       { status: 500 }
     );
   }
 }
+
+
