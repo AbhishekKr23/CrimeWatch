@@ -1,19 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 const prisma = new PrismaClient();
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   context: { params: { reportId: string } }
 ) {
   try {
-    const { reportId } = await context.params; // <-- yaha await lagaya
-
     const report = await prisma.report.findUnique({
       where: {
-        reportId: reportId,  // Tumhara DB column 'reportId' hi hai
+        id: context.params.reportId,
       },
     });
 
@@ -32,7 +30,7 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   context: { params: { reportId: string } }
 ) {
   try {
@@ -41,11 +39,9 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { reportId } = await context.params; // <-- yaha bhi await lagaya
     const { status } = await request.json();
-
     const report = await prisma.report.update({
-      where: { reportId: reportId },
+      where: { id: context.params.reportId },
       data: { status },
     });
 
@@ -58,5 +54,4 @@ export async function PATCH(
     );
   }
 }
-
 
