@@ -1,13 +1,34 @@
 # 🛡️ CrimeWatch App
 
-A full-stack crime reporting platform where users can report crimes **100% anonymously** using Google Gemini AI to simplify the process.
+CrimeWatch is a **full-stack crime reporting platform** that allows users to report crimes easily, quickly, and **100% anonymously**.
+
+🔐 **Privacy First**: Users do not need to log in or share any personal details. All reports are confidential.
+
+🧠 **Powered by Google Gemini AI**: To make reporting easier, CrimeWatch uses **Gemini AI** to help users **summarize incidents** and **auto-fill** report forms based on what they type or speak. This helps people report crimes even if they are unsure how to explain everything clearly.
+
+## 💡 Why CrimeWatch?
+
+Many people don’t report crimes because they:
+- Feel scared
+- Don’t want to reveal identity
+- Don’t know how to explain the issue
+
+CrimeWatch solves this by:
+- Keeping users **anonymous**
+- Giving a **simple and clear form**
+- Using **AI to help write** the report
+- Letting users **track report status** using just a report ID
 
 ---
 
-## 🚀 Features
+## 🌟 Main Features
 
-- ✅ Anonymous crime reporting
-- 🤖 AI-powered description generation (Google Gemini)
+- 🔐 100% Anonymous crime reporting
+- 🤖 AI-assisted form filling (Google Gemini)
+- 📋 See all reports (admin view or public log)
+- 🕵️ Track your report using an ID
+- 📊 Dashboard showing report status (Pending, Resolved, etc.)
+- 📱 Simple and clean UI
 - 🔐 Role-based authentication (NextAuth)
 - 💻 Responsive UI with Tailwind CSS + Shadcn UI
 - ⚡ Fast backend using Prisma ORM + NeonDB
