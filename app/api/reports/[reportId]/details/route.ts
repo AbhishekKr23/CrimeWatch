@@ -1,11 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 const prisma = new PrismaClient();
 
 export async function GET(
-  request: Request,
+  req: NextRequest,
   context: { params: { reportId: string } }
 ) {
   try {
@@ -13,7 +13,7 @@ export async function GET(
 
     const report = await prisma.report.findUnique({
       where: {
-        reportId: reportId,
+        reportId,
       },
     });
 
@@ -32,7 +32,7 @@ export async function GET(
 }
 
 export async function PATCH(
-  request: Request,
+  req: NextRequest,
   context: { params: { reportId: string } }
 ) {
   try {
@@ -42,10 +42,10 @@ export async function PATCH(
     }
 
     const { reportId } = context.params;
-    const { status } = await request.json();
+    const { status } = await req.json();
 
     const report = await prisma.report.update({
-      where: { reportId: reportId },
+      where: { reportId },
       data: { status },
     });
 
@@ -58,4 +58,5 @@ export async function PATCH(
     );
   }
 }
+
 
