@@ -3,9 +3,10 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth"; 
 
+// Adding minimal type annotation
 export async function PATCH(
-  req,
-  { params }
+  req: Request,
+  { params }: { params: any }
 ) {
   const reportId = params.reportId;
   try {
