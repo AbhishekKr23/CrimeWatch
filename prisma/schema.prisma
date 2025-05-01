@@ -25,7 +25,7 @@ model Report {
   type        ReportType
   title       String
   description String
-  reportType  String
+  reportCategory  String
   location    String?
   latitude    Float?
   longitude   Float?
