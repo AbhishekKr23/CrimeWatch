@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { ReportType } from "@prisma/client";
+// ❌ remove: import { ReportType } from "@prisma/client";
 
 export async function POST(request: Request) {
   try {
     const {
       reportId,
-      type,
+      type, // just use as string
       specificType,
       title,
       description,
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     const report = await prisma.report.create({
       data: {
         reportId,
-        type: type as ReportType,
+        type, // no casting needed
         title,
         description,
         reportType: specificType,
