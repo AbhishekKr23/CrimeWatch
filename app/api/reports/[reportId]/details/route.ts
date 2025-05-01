@@ -1,37 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
 
-
-// ✅ PATCH handler — for updating a report
-export async function PATCH(
-  request: Request,
-  context: { params: { reportId: string } }
-) {
+// PATCH request handler
+export async function PATCH(req: NextRequest) {
   try {
-    const { reportId } = context.params;
-    const { status } = await request.json();
+    // Parse incoming request body
+    const body = await req.json();
+    console.log('Received data:', body);
 
-    await connectMongoDB();
+    // You can replace this with actual database operations later
+    // For now, returning a dummy success message
+    return NextResponse.json({ message: 'Success!', data: body });
 
-    const updatedReport = await Report.findByIdAndUpdate(
-      reportId,
-      { status },
-      { new: true }
-    );
-
-    if (!updatedReport) {
-      return NextResponse.json(
-        { message: "Report not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(updatedReport);
   } catch (error) {
-    console.error("PATCH error:", error);
-    return NextResponse.json(
-      { message: "Something went wrong" },
-      { status: 500 }
-    );
+    console.error('Error handling PATCH request:', error);
+    // If an error occurs, return a 500 response with error details
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
+}
+
+// GET request handler (optional, you can modify or remove this)
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const reportId = searchParams.get('reportId');
+  
+  if (!reportId) {
+    return NextResponse.json({ error: 'Report ID is missing' }, { status: 400 });
+  }
+  
+  // You can replace this with fetching data from your database
+  const reportData = { id: reportId, title: 'Sample Report' };
+
+  return NextResponse.json(reportData);
 }
 
