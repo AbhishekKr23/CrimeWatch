@@ -1,19 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 
 const prisma = new PrismaClient();
 
-// Type declaration for the context parameter
-type RouteContext = {
-  params: {
-    reportId: string;
-  };
-};
-
-export async function GET(request: NextRequest, context: RouteContext) {
+// Use the default Next.js App Router handler parameters
+export async function GET(
+  req,
+  { params }
+) {
   try {
-    const reportId = context.params.reportId;
+    const reportId = params.reportId;
     const report = await prisma.report.findUnique({
       where: {
         reportId: reportId,
@@ -34,15 +31,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 }
 
-export async function PATCH(request: NextRequest, context: RouteContext) {
+export async function PATCH(
+  req,
+  { params }
+) {
   try {
     const session = await getServerSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const reportId = context.params.reportId;
-    const { status } = await request.json();
+    const reportId = params.reportId;
+    const { status } = await req.json();
     
     const report = await prisma.report.update({
       where: { reportId: reportId },
