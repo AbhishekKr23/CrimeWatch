@@ -4,10 +4,10 @@ import { getServerSession } from "next-auth";
 
 const prisma = new PrismaClient();
 
-// Use the default Next.js App Router handler parameters
+// Adding minimal type annotations
 export async function GET(
-  req,
-  { params }
+  req: Request,
+  { params }: { params: any }
 ) {
   try {
     const reportId = params.reportId;
@@ -32,8 +32,8 @@ export async function GET(
 }
 
 export async function PATCH(
-  req,
-  { params }
+  req: Request,
+  { params }: { params: any }
 ) {
   try {
     const session = await getServerSession();
