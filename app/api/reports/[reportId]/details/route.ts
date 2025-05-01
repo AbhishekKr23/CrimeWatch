@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
+import type { NextApiRequest } from "next"; // ✅ just for safety if you use in logic
+import type { NextRequestContext } from "next/server"; // ✅ this line fixes the error!
 
 const prisma = new PrismaClient();
 
 export async function GET(
   req: NextRequest,
-  context: { params: { reportId: string } }
+  context: NextRequestContext
 ) {
-  try {
-    const { reportId } = context.params;
+  const reportId = context.params?.reportId as string;
 
+  try {
     const report = await prisma.report.findUnique({
       where: {
         reportId,
@@ -33,7 +35,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { reportId: string } }
+  context: NextRequestContext
 ) {
   try {
     const session = await getServerSession();
@@ -41,7 +43,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { reportId } = context.params;
+    const reportId = context.params?.reportId as string;
     const { status } = await req.json();
 
     const report = await prisma.report.update({
@@ -58,5 +60,4 @@ export async function PATCH(
     );
   }
 }
-
 
