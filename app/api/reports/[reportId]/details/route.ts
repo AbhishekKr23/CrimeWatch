@@ -1,35 +1,63 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
 
-// PATCH request handler
-export async function PATCH(req: NextRequest) {
+const prisma = new PrismaClient();
+
+export async function GET(
+  request: Request,
+  context: { params: { reportId: string } }
+) {
   try {
-    // Parse incoming request body
-    const body = await req.json();
-    console.log('Received data:', body);
+    const { reportId } = await context.params; // <-- yaha await lagaya
 
-    // You can replace this with actual database operations later
-    // For now, returning a dummy success message
-    return NextResponse.json({ message: 'Success!', data: body });
+    const report = await prisma.report.findUnique({
+      where: {
+        reportId: reportId,  // Tumhara DB column 'reportId' hi hai
+      },
+    });
 
+    if (!report) {
+      return NextResponse.json({ error: "Report not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(report);
   } catch (error) {
-    console.error('Error handling PATCH request:', error);
-    // If an error occurs, return a 500 response with error details
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    console.error("Error fetching report details:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch report details" },
+      { status: 500 }
+    );
   }
 }
 
-// GET request handler (optional, you can modify or remove this)
-export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const reportId = searchParams.get('reportId');
-  
-  if (!reportId) {
-    return NextResponse.json({ error: 'Report ID is missing' }, { status: 400 });
-  }
-  
-  // You can replace this with fetching data from your database
-  const reportData = { id: reportId, title: 'Sample Report' };
+export async function PATCH(
+  request: Request,
+  context: { params: { reportId: string } }
+) {
+  try {
+    const session = await getServerSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  return NextResponse.json(reportData);
+    const { reportId } = await context.params; // <-- yaha bhi await lagaya
+    const { status } = await request.json();
+
+    const report = await prisma.report.update({
+      where: { reportId: reportId },
+      data: { status },
+    });
+
+    return NextResponse.json(report);
+  } catch (error) {
+    console.error("Error updating report:", error);
+    return NextResponse.json(
+      { error: "Error updating report" },
+      { status: 500 }
+    );
+  }
 }
+
+
 
