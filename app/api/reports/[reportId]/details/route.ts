@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
+import { NextRequest } from "next/server";
 
 const prisma = new PrismaClient();
 
-// Adding minimal type annotations
 export async function GET(
-  req: Request,
-  { params }: { params: any }
+  req: NextRequest,
+  { params }: { params: { reportId: string } }
 ) {
   try {
     const reportId = params.reportId;
@@ -16,11 +16,9 @@ export async function GET(
         reportId: reportId,
       },
     });
-
     if (!report) {
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
-
     return NextResponse.json(report);
   } catch (error) {
     console.error("Error fetching report details:", error);
@@ -32,15 +30,14 @@ export async function GET(
 }
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: any }
+  req: NextRequest,
+  { params }: { params: { reportId: string } }
 ) {
   try {
     const session = await getServerSession();
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     const reportId = params.reportId;
     const { status } = await req.json();
     
@@ -48,7 +45,6 @@ export async function PATCH(
       where: { reportId: reportId },
       data: { status },
     });
-
     return NextResponse.json(report);
   } catch (error) {
     console.error("Error updating report:", error);
